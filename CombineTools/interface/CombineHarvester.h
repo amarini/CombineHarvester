@@ -273,6 +273,9 @@ class CombineHarvester {
   template<typename Function>
   void ForEachSyst(Function func);
 
+  template<typename Function>
+  void ForEachWs(Function func);
+
   void VariableRebin(std::vector<double> bins);
   void ZeroBins(double min, double max);
   void SetPdfBins(unsigned nbins);
@@ -621,6 +624,11 @@ void CombineHarvester::ForEachObj(Function func) {
   ForEachObs(func);
   ForEachProc(func);
   ForEachSyst(func);
+}
+
+template<typename Function>
+void CombineHarvester::ForEachWs(Function func){
+    for (auto & item : wspaces_) func(item.second.get());
 }
 
 template<typename Function>

@@ -17,6 +17,7 @@ void ForEachObjPy(ch::CombineHarvester & cb, boost::python::object func);
 void ForEachObsPy(ch::CombineHarvester & cb, boost::python::object func);
 void ForEachProcPy(ch::CombineHarvester & cb, boost::python::object func);
 void ForEachSystPy(ch::CombineHarvester & cb, boost::python::object func);
+void ForEachWsPy(ch::CombineHarvester & cb, boost::python::object func);
 
 void CloneObsPy(ch::CombineHarvester& src, ch::CombineHarvester& dest,
                 boost::python::object func);

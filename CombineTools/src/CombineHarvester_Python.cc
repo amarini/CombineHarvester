@@ -75,6 +75,13 @@ void ForEachSystPy(ch::CombineHarvester & cb, boost::python::object func) {
   cb.ForEachSyst(lambda);
 }
 
+void ForEachWsPy(ch::CombineHarvester & cb, boost::python::object func) {
+      auto lambda = [func](RooWorkspace*ws) {
+      func(boost::ref(*ws));
+  };
+  cb.ForEachWs(lambda);
+}
+
 void ForEachObjPy(ch::CombineHarvester & cb, boost::python::object func) {
       auto lambda = [func](ch::Object *obj) {
       func(boost::ref(*obj));
@@ -320,6 +327,7 @@ BOOST_PYTHON_MODULE(libCombineHarvesterCombineTools)
       .def("ForEachObs", ForEachObsPy)
       .def("ForEachProc", ForEachProcPy)
       .def("ForEachSyst", ForEachSystPy)
+      .def("ForEachWs", ForEachWsPy)
       .def("VariableRebin", &CombineHarvester::VariableRebin)
       .def("ZeroBins", &CombineHarvester::ZeroBins)
       .def("SetPdfBins", &CombineHarvester::SetPdfBins)

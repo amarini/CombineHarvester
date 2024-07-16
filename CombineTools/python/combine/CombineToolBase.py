@@ -8,9 +8,12 @@ from six.moves import range
 
 DRY_RUN = False
 
+COPY_LOCAL=True
+
 JOB_PREFIX = """#!/bin/sh
 ulimit -s unlimited
 set -e
+WORKDIR=$(pwd)
 cd %(CMSSW_BASE)s/src
 export SCRAM_ARCH=%(SCRAM_ARCH)s
 source /cvmfs/cms.cern.ch/cmsset_default.sh
@@ -21,6 +24,7 @@ cd %(PWD)s
     'SCRAM_ARCH': os.environ['SCRAM_ARCH'],
     'PWD': os.environ['PWD']
 })
+if COPY_LOCAL: JOB_PREFIX += "\n cd $WORKDIR\n"
 
 CONDOR_TEMPLATE = """executable = %(EXE)s
 arguments = $(ProcId)
@@ -312,9 +316,15 @@ class CombineToolBase:
                 jobs += 1
                 for line in self.job_queue[j:j + self.merge]:
                     newline = self.pre_cmd + line
+                    if COPY_LOCAL:
+                        wsp = str(self.extract_workspace_arg(newline.split()))
+                        newline = newline.replace(wsp, os.path.basename(wsp))
+                        newline = ('cp -v %s ./%s && ' % (wsp, os.path.basename(wsp))) + newline
                     outscript.write('  ' + newline + '\n')
                 outscript.write('fi')
             outscript.write('\n' + self.post_job_cmd+'\n')
+            if COPY_LOCAL:
+                outscript.write('rsync -avP higgsCombine*.root $WORKDIR/\n') ## rsync won't copy identical files like the inputs
             outscript.close()
             st = os.stat(outscriptname)
             os.chmod(outscriptname, st.st_mode | stat.S_IEXEC)
